@@ -11,7 +11,6 @@ exports.getBootcamps = (req, res, next) => {
       route: "show all bootcamps",
     },
   });
-  // next();
 };
 
 //  @desc     Create a bootcamp
@@ -27,7 +26,6 @@ exports.createBootCamp = (req, res, next) => {
       route: "create new bootcamp",
     },
   });
-  // next();
 };
 
 //  @desc     Get one bootcamp
@@ -45,7 +43,6 @@ exports.getBootcamp = (req, res, next) => {
       bootId,
     },
   });
-  // next();
 };
 
 //  @desc     Update Bootcamp
@@ -63,7 +60,6 @@ exports.updateBootcamp = (req, res, next) => {
       bootId,
     },
   });
-  // next();
 };
 
 //  @desc     Delete bootcamp
@@ -81,5 +77,4 @@ exports.deleteBootcamp = (req, res, next) => {
       bootId,
     },
   });
-  // next();
 };
