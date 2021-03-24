@@ -1,6 +1,7 @@
 const express = require("express"),
   dotenv = require("dotenv"),
-  morgan = require("morgan");
+  morgan = require("morgan"),
+  colors = require("colors");
 
 // DB Connection
 const connectDB = require("./config/db");
@@ -29,13 +30,14 @@ app.get("*", (req, res) => {
 
 const server = app.listen(PORT, () => {
   console.log(
-    `Dev Boot Camp running in ${NODE_ENV} mode on port: ${PORT}`
+    `Dev Boot Camp running in ${NODE_ENV} mode on port: ${PORT}`.underline
+      .magenta.bold
   );
 });
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err, promise) => {
-  console.log(`Error: ${err.message}`);
+  console.log(`Error: ${err.message}`.bold.underline.red);
   // Close server and exit process
   server.close(() => process.exit(1));
 });
