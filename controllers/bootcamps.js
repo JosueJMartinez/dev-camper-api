@@ -11,6 +11,7 @@ exports.getBootcamps = async (req, res, next) => {
 			success: true,
 			data: {
 				bootcamps,
+				count: bootcamps.length,
 			},
 		});
 	} catch (err) {
@@ -71,33 +72,56 @@ exports.getBootcamp = async (req, res, next) => {
 //  @desc     Update Bootcamp
 //  @route    Put /api/v1/bootcamps/:id
 //  @access   Private
-exports.updateBootcamp = (req, res, next) => {
+exports.updateBootcamp = async (req, res, next) => {
 	const { bootId } = { ...req.params };
-	res.status(200).json({
-		success: true,
-		data: {
-			first_name: 'Josue',
-			last_name: 'Martinez',
-			id: 10023,
-			route: `update bootcamp ${bootId}`,
+	try {
+		const updateBootcamp = req.body;
+		const bootcamp = await Bootcamp.findByIdAndUpdate(
 			bootId,
-		},
-	});
+			updateBootcamp,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
+
+		if (!bootcamp) throw new Error();
+
+		res.status(200).json({
+			success: true,
+			data: {
+				bootcamp,
+			},
+		});
+	} catch (err) {
+		console.log(
+			`Something went wrong here in getting bootcamp with id: ${bootId}`
+				.red.underline.bold
+		);
+		return res.status(400).json({ success: false });
+	}
 };
 
 //  @desc     Delete bootcamp
 //  @route    Delete /api/v1/bootcamps/:id
 //  @access   Private
-exports.deleteBootcamp = (req, res, next) => {
+exports.deleteBootcamp = async (req, res, next) => {
 	const { bootId } = { ...req.params };
-	res.status(200).json({
-		success: true,
-		data: {
-			first_name: 'Josue',
-			last_name: 'Martinez',
-			id: 10023,
-			route: `delete bootcamp ${bootId}`,
-			bootId,
-		},
-	});
+	try {
+		const bootcamp = await Bootcamp.findByIdAndDelete(bootId);
+		if (!bootcamp) throw new Error();
+
+		res.status(200).json({
+			success: true,
+			data: {
+				bootcamp,
+			},
+		});
+	} catch (err) {
+		console.log(
+			`Something went wrong here in getting bootcamp with id: ${bootId}`
+				.red.underline.bold
+		);
+		return res.status(400).json({ success: false });
+	}
 };
