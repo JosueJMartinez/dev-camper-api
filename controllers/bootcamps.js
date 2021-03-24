@@ -4,14 +4,22 @@ const Bootcamp = require('../models/Bootcamp');
 //  @route    Get /api/v1/bootcamps
 //  @access   Public
 exports.getBootcamps = async (req, res, next) => {
-	const bootcamps = await Bootcamp.find({});
-	console.log(bootcamps);
-	res.status(200).json({
-		success: true,
-		data: {
-			bootcamps,
-		},
-	});
+	try {
+		const bootcamps = await Bootcamp.find({});
+		console.log(bootcamps);
+		res.status(200).json({
+			success: true,
+			data: {
+				bootcamps,
+			},
+		});
+	} catch (err) {
+		console.log(
+			'Something went wrong here in getting all bootcamps'.red.underline
+				.bold
+		);
+		return res.status(400).json({ success: false });
+	}
 };
 
 //  @desc     Create a bootcamp
@@ -28,6 +36,9 @@ exports.createBootCamp = async (req, res, next) => {
 			data: addedBootcamp,
 		});
 	} catch (err) {
+		console.log(
+			'Something went wrong here in creating bootcamp'.red.underline.bold
+		);
 		return res.status(400).json({ success: false });
 	}
 };
@@ -35,18 +46,26 @@ exports.createBootCamp = async (req, res, next) => {
 //  @desc     Get one bootcamp
 //  @route    Get /api/v1/bootcamps/:id
 //  @access   Public
-exports.getBootcamp = (req, res, next) => {
+exports.getBootcamp = async (req, res, next) => {
 	const { bootId } = { ...req.params };
-	res.status(200).json({
-		success: true,
-		data: {
-			first_name: 'Josue',
-			last_name: 'Martinez',
-			id: 10023,
-			route: `show bootcamp ${bootId}`,
-			bootId,
-		},
-	});
+	try {
+		const bootcamp = await Bootcamp.findById(bootId);
+
+		if (!bootcamp) throw new Error();
+
+		res.status(200).json({
+			success: true,
+			data: {
+				bootcamp,
+			},
+		});
+	} catch (err) {
+		console.log(
+			`Something went wrong here in getting bootcamp with id: ${bootId}`
+				.red.underline.bold
+		);
+		return res.status(400).json({ success: false });
+	}
 };
 
 //  @desc     Update Bootcamp
