@@ -1,14 +1,15 @@
+const Bootcamp = require('../models/Bootcamp');
+
 //  @desc     Get all bootcamps
 //  @route    Get /api/v1/bootcamps
 //  @access   Public
-exports.getBootcamps = (req, res, next) => {
+exports.getBootcamps = async (req, res, next) => {
+	const bootcamps = await Bootcamp.find({});
+	console.log(bootcamps);
 	res.status(200).json({
 		success: true,
 		data: {
-			first_name: 'Josue',
-			last_name: 'Martinez',
-			id: 10023,
-			route: 'show all bootcamps',
+			bootcamps,
 		},
 	});
 };
@@ -16,16 +17,19 @@ exports.getBootcamps = (req, res, next) => {
 //  @desc     Create a bootcamp
 //  @route    Post /api/v1/bootcamps
 //  @access   Private
-exports.createBootCamp = (req, res, next) => {
-	res.status(200).json({
-		success: true,
-		data: {
-			first_name: 'Josue',
-			last_name: 'Martinez',
-			id: 10023,
-			route: 'create new bootcamp',
-		},
-	});
+exports.createBootCamp = async (req, res, next) => {
+	try {
+		const newBootcamp = new Bootcamp(req.body);
+
+		const addedBootcamp = await newBootcamp.save();
+
+		res.status(201).json({
+			success: true,
+			data: addedBootcamp,
+		});
+	} catch (err) {
+		return res.status(400).json({ success: false });
+	}
 };
 
 //  @desc     Get one bootcamp
