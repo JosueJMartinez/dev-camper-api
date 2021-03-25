@@ -3,6 +3,8 @@ const express = require('express'),
 	morgan = require('morgan'),
 	colors = require('colors');
 
+const errorHandler = require('./middleware/error')
+
 // DB Connection
 const connectDB = require('./config/db');
 
@@ -30,6 +32,8 @@ app.use('/api/v1/bootcamps', bootcamps);
 app.get('*', (req, res) => {
 	res.status(404).json({ success: false, message: 'page not found' });
 });
+
+app.use(errorHandler)
 
 const server = app.listen(PORT, () => {
 	console.log(
