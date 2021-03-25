@@ -1,4 +1,5 @@
 const Bootcamp = require('../models/Bootcamp');
+const ErrorResponse = require('../utils/errorResponse');
 
 //  @desc     Get all bootcamps
 //  @route    Get /api/v1/bootcamps
@@ -15,12 +16,7 @@ exports.getBootcamps = async (req, res, next) => {
 			},
 		});
 	} catch (err) {
-		console.log(
-			'Something went wrong here in getting all bootcamps'.red.underline
-				.bold
-		);
-		return res.status(400).json({ success: false });
-		// next(err);
+		next(err);
 	}
 };
 
@@ -38,10 +34,7 @@ exports.createBootCamp = async (req, res, next) => {
 			data: addedBootcamp,
 		});
 	} catch (err) {
-		console.log(
-			'Something went wrong here in creating bootcamp'.red.underline.bold
-		);
-		return res.status(400).json({ success: false });
+		next(err);
 	}
 };
 
@@ -53,7 +46,12 @@ exports.getBootcamp = async (req, res, next) => {
 	try {
 		const bootcamp = await Bootcamp.findById(bootId);
 
-		if (!bootcamp) throw new Error();
+		if (!bootcamp)
+			throw new ErrorResponse(
+				`Resource not found with id of ${bootId}`,
+				404,
+				bootId
+			);
 
 		res.status(200).json({
 			success: true,
@@ -62,11 +60,6 @@ exports.getBootcamp = async (req, res, next) => {
 			},
 		});
 	} catch (err) {
-		console.log(
-			`Something went wrong here in getting bootcamp with id: ${bootId}`
-				.red.underline.bold
-		);
-		// return res.status(400).json({ success: false });
 		next(err);
 	}
 };
@@ -87,7 +80,12 @@ exports.updateBootcamp = async (req, res, next) => {
 			}
 		);
 
-		if (!bootcamp) throw new Error();
+		if (!bootcamp)
+			throw new ErrorResponse(
+				`Resource not found with id of ${bootId}`,
+				404,
+				bootId
+			);
 
 		res.status(200).json({
 			success: true,
@@ -96,11 +94,7 @@ exports.updateBootcamp = async (req, res, next) => {
 			},
 		});
 	} catch (err) {
-		console.log(
-			`Something went wrong here in getting bootcamp with id: ${bootId}`
-				.red.underline.bold
-		);
-		return res.status(400).json({ success: false });
+		next(err);
 	}
 };
 
@@ -111,7 +105,12 @@ exports.deleteBootcamp = async (req, res, next) => {
 	const { bootId } = { ...req.params };
 	try {
 		const bootcamp = await Bootcamp.findByIdAndDelete(bootId);
-		if (!bootcamp) throw new Error();
+		if (!bootcamp)
+			throw new ErrorResponse(
+				`Resource not found with id of ${bootId}`,
+				404,
+				bootId
+			);
 
 		res.status(200).json({
 			success: true,
@@ -120,10 +119,6 @@ exports.deleteBootcamp = async (req, res, next) => {
 			},
 		});
 	} catch (err) {
-		console.log(
-			`Something went wrong here in getting bootcamp with id: ${bootId}`
-				.red.underline.bold
-		);
-		return res.status(400).json({ success: false });
+		next(err);
 	}
 };
