@@ -4,22 +4,34 @@ function errorHandler(err, req, res, next) {
 	let error = { ...err };
 	error.message = err.message;
 
-	// Mongoose bad object id
 	if (err.name === 'CastError') {
 		error = new ErrorResponse(
 			`Resource not found with id of ${err.value}`,
 			404
 		);
 	}
+
+	// Mongoose Duplicate Error
+	if (error.code === 11000)
+		error = new ErrorResponse(
+			`Duplicate name found trying to create this resource`,
+			400
+		);
+
+	// Mongoose validation error
+	if (err.name === 'ValidationError') {
+		const msg = Object.values(err.errors).map(val => val.message);
+		error = new ErrorResponse(msg, 400);
+	}
+
 	if (error.statusCode === 404)
 		console.log(
-			`Something went wrong here in getting bootcamp with id: ${err.value}`
-				.yellow.underline.bold
+			`404 error getting resource with id: ${err.value}`.yellow.underline
+				.bold
 		);
 	else
 		console.log(
-			`Something went wrong here in getting bootcamp with id: ${err.value}`
-				.red.underline.bold
+			`${error.message}: ${error.statusCode}`.red.underline.bold
 		);
 
 	res.status(error.statusCode || 500).json({
