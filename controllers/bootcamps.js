@@ -7,7 +7,6 @@ const asyncHandler = require('../middleware/async');
 //  @access   Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
 	const bootcamps = await Bootcamp.find({});
-	console.log(`bootcamps: ${bootcamps}`);
 	res.status(200).json({
 		success: true,
 		data: {
@@ -22,9 +21,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 //  @access   Private
 exports.createBootCamp = asyncHandler(async (req, res, next) => {
 	const newBootcamp = new Bootcamp(req.body);
-
 	const addedBootcamp = await newBootcamp.save();
-
 	res.status(201).json({
 		success: true,
 		data: addedBootcamp,

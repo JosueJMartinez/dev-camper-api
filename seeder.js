@@ -4,13 +4,13 @@ const colors = require('colors');
 const dotenv = require('dotenv');
 
 // Load env vars
-dotenv.config({ path: './config/congfig.env' });
+dotenv.config({ path: './config/config.env' });
 
 // Load models
 const Bootcamp = require('./models/Bootcamp');
 
 // Connect to DB
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect('mongodb+srv://josue:Rings218@cluster0.jkann.mongodb.net/devbootcamp?retryWrites=true&w=majority', {
 	useNewUrlParser: true,
 	useCreateIndex: true,
 	useFindAndModify: false,
@@ -32,6 +32,7 @@ const importData = async () => {
 	} catch (err) {
 		console.log(err);
 		console.log('Error importing seed data'.red.inverse);
+		process.exit();
 	}
 };
 
@@ -44,6 +45,7 @@ const deleteData = async () => {
 	} catch (err) {
 		console.log(err);
 		console.log('Error deleting seed data'.red.inverse);
+		process.exit();
 	}
 };
 
@@ -53,4 +55,5 @@ if (process.argv[2].toLowerCase() === '-i') {
 	deleteData();
 } else {
 	console.log('Please enter -i to import or -d to delete data');
+	process.exit();
 }
