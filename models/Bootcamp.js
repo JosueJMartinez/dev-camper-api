@@ -116,13 +116,14 @@ BootcampSchema.pre('save', function (next) {
 // GeoCode and create location field
 BootcampSchema.pre('save', async function (next) {
 	const loc = await geocoder.geocode(this.address);
+	console.log(loc)
 	this.location = {
 		type: 'Point',
 		coordinates: [loc[0].longitude, loc[0].latitude],
 		formattedAddress: loc[0].formattedAddress,
 		street: loc[0].streetName,
 		city: loc[0].city,
-		state: loc[0].stateCode,
+		state: loc[0].administrativeLevels.level1short,
 		zipcode: loc[0].zipcode,
 		country: loc[0].countryCode,
 	};
