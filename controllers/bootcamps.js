@@ -2,31 +2,48 @@ const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const geocoder = require('../utils/geocoder');
+
 //  @desc     Get all bootcamps
 //  @route    Get /api/v1/bootcamps
 //  @access   Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-	
-// 	Copy req.query
-	const reqQuery = {...req.query};
-	
-// 	Fields to exclude
-	const removeFields = ['select'];
-	
-// 	Loop over removeFields and delete them from the reqQuery
-	removeFields.forEach(param => delete reqQuery[param]);
-	
-// 	Create query string`
-	let queryStr = JSON.stringify(req.query);
-	
-// 	Create operators ($gt, $gte, etc)
-	queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
-	
-// 	Create js object for query
-	const query = JSON.parse(queryStr)
+	// 	Copy req.query
+	const reqQuery = { ...req.query };
 
-// 	Find the resource
-	const bootcamps = await Bootcamp.find(query);
+	// 	Fields to exclude
+	const removeFields = ['select', 'sort'];
+
+	// 	Loop over removeFields and delete them from the reqQuery
+	removeFields.forEach(param => delete reqQuery[param]);
+
+	// 	Create query string`
+	let queryStr = JSON.stringify(reqQuery);
+
+	// 	Create operators ($gt, $gte, etc)
+	queryStr = queryStr.replace(
+		/\b(gt|gte|lt|lte|in)\b/g,
+		match => `$${match}`
+	);
+
+	// 	Find resources
+	const query = Bootcamp.find(JSON.parse(queryStr));
+
+	// Select fields do this only if select fields are present to limit selection
+	if (req.query.select) {
+		const fields = req.query.select.replace(/,/g, ' ');
+		query.select(fields);
+	}
+
+	// Sort
+	if (req.query.sort) {
+		const sortBy = req.query.sort.replace(/,/g, ' ');
+		query.sort(sortBy);
+	} else {
+		query.sort('-createAt');
+	}
+
+	// 	Execute
+	const bootcamps = await query;
 	res.status(200).json({
 		success: true,
 		data: {
