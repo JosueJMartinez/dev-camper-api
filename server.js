@@ -16,6 +16,7 @@ connectDB();
 
 // Route files
 const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
 
 const { PORT, NODE_ENV } = { ...process.env };
 const app = express();
@@ -28,6 +29,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 app.get('*', (req, res) => {
 	res.status(404).json({ success: false, message: 'page not found' });

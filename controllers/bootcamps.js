@@ -70,7 +70,8 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 		};
 	}
 
-	if (!bootcamps.length) throw new ErrorResponse(`uh oh`, 400);
+	if (!bootcamps.length)
+		throw new ErrorResponse(`uh oh no more bootcamps`, 400);
 
 	res.status(200).json({
 		success: true,
@@ -95,13 +96,13 @@ exports.createBootCamp = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Get one bootcamp
-//  @route    Get /api/v1/bootcamps/:id
+//  @route    Get /api/v1/bootcamps/:bootId
 //  @access   Public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
-	const bootcamp = await Bootcamp.find({ slug: bootId });
+	const bootcamp = await Bootcamp.findById(bootId);
 	console.log(bootcamp);
-	if (!bootcamp.length)
+	if (!bootcamp)
 		throw new ErrorResponse(
 			`1. Resource not found with id of ${bootId}`,
 			404,
@@ -111,7 +112,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 	res.status(200).json({
 		success: true,
 		data: {
-			bootcamp: bootcamp[0],
+			bootcamp,
 		},
 	});
 });
@@ -122,8 +123,8 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
 	const updateBootcamp = req.body;
-	const bootcamp = await Bootcamp.findOneAndUpdate(
-		{ slug: bootId },
+	const bootcamp = await Bootcamp.findByIdAndUpdate(
+		bootId,
 		updateBootcamp,
 		{
 			new: true,
@@ -150,7 +151,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 //  @access   Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
-	const bootcamp = await Bootcamp.findOneAndDelete({ slug: bootId });
+	const bootcamp = await Bootcamp.findByIdAndDelete(bootId);
 	if (!bootcamp)
 		throw new ErrorResponse(
 			`Resource not found with id of ${bootId}`,
