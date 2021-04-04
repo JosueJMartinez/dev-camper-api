@@ -7,19 +7,27 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './config/config.env' });
 
 // Load models
-const Bootcamp = require('./models/Bootcamp');
+const Bootcamp = require('./models/Bootcamp'),
+	Course = require('./models/Course');
 
 // Connect to DB
-mongoose.connect('mongodb+srv://josue:Rings218@cluster0.jkann.mongodb.net/devbootcamp?retryWrites=true&w=majority', {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
-	useUnifiedTopology: true,
-});
+mongoose.connect(
+	'mongodb+srv://josue:Rings218@cluster0.jkann.mongodb.net/devbootcamp?retryWrites=true&w=majority',
+	{
+		useNewUrlParser: true,
+		useCreateIndex: true,
+		useFindAndModify: false,
+		useUnifiedTopology: true,
+	}
+);
 
 // Read the JSON files
 const bootcamps = JSON.parse(
 	fs.readFileSync(`${__dirname}/_data/bootcamps.json`),
+	'utf-8'
+);
+const courses = JSON.parse(
+	fs.readFileSync(`${__dirname}/_data/courses.json`),
 	'utf-8'
 );
 
@@ -27,7 +35,8 @@ const bootcamps = JSON.parse(
 const importData = async () => {
 	try {
 		await Bootcamp.create(bootcamps);
-		console.log('Data Imported Bootcamps...'.green.inverse);
+		await Course.create(courses);
+		console.log('Data Imported...'.green.inverse);
 		process.exit();
 	} catch (err) {
 		console.log(err);
@@ -40,7 +49,8 @@ const importData = async () => {
 const deleteData = async () => {
 	try {
 		await Bootcamp.deleteMany();
-		console.log('All data destroyed for bootcamps'.green.inverse);
+		await Course.deleteMany();
+		console.log('All data destroyed'.green.inverse);
 		process.exit();
 	} catch (err) {
 		console.log(err);
