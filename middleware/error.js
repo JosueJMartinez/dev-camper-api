@@ -24,6 +24,7 @@ function errorHandler(err, req, res, next) {
 		error = new ErrorResponse(msg, 400);
 	}
 
+	// Server Console log errors
 	if (error.statusCode === 404)
 		console.log(
 			`404 error getting resource with id: ${err.value}`.yellow.underline

@@ -1,5 +1,4 @@
 const Course = require('../models/Course');
-const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
@@ -17,12 +16,19 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 		// console.log(bootCampQuery);
 		query = Course.find({ bootcamp: bootcampId });
 	} else {
-		query = Course.find({});
+		query = Course.find({}).populate({
+			path: 'bootcamp',
+			select: 'name description',
+		});
 	}
 
 	const courses = await query;
 	if (!courses.length)
-		throw new ErrorResponse('uh oh no more courses', 400);
+		throw new ErrorResponse(
+			'uh oh no more courses',
+			400,
+			bootcampId || null
+		);
 
 	res.status(200).json({
 		success: true,
