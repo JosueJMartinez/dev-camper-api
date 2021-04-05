@@ -7,6 +7,7 @@ const CourseSchema = new mongoose.Schema({
 		trim: true,
 		required: [true, 'Please add a course title'],
 		maxLength: [50, 'Length cannot be more than 50 characters'],
+		unique: true,
 	},
 	description: {
 		type: String,
@@ -39,6 +40,12 @@ const CourseSchema = new mongoose.Schema({
 		ref: 'Bootcamp',
 		required: true,
 	},
+	slug: String,
+});
+
+CourseSchema.pre('save', function (next) {
+	this.slug = slugify(this.title, { lower: true, replacement: '_' });
+	next();
 });
 
 module.exports = mongoose.model('Course', CourseSchema);

@@ -1,4 +1,5 @@
 const Course = require('../models/Course');
+const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
@@ -35,6 +36,56 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 		data: {
 			courses,
 			count: courses.length,
+		},
+	});
+});
+
+//  @desc     Get one course
+//  @route    Get /api/v1/courses/:courseId
+//  @access   Public
+exports.getCourse = asyncHandler(async (req, res, next) => {
+	const { courseId } = { ...req.params };
+	const course = await Course.findById(courseId).populate({
+		path: 'bootcamp',
+		select: 'name description',
+	});
+	console.log(course);
+	if (!course)
+		throw new ErrorResponse(
+			`1. Resource not found with id of ${courseId}`,
+			404,
+			courseId
+		);
+
+	res.status(200).json({
+		success: true,
+		data: {
+			course,
+		},
+	});
+});
+
+//  @desc     Add a single Course
+//  @route    Post /api/v1/bootcamps/:bootcampId/courses
+//  @access   Private
+exports.createCourse = asyncHandler(async (req, res, next) => {
+	const { bootcampId } = { ...req.params };
+	const foundBootCamp = await Bootcamp.findById(bootcampId);
+	console.log(foundBootCamp);
+	if (!foundBootCamp) {
+		throw new ErrorResponse(
+			`Resource not found with id of ${bootcampId}`,
+			404,
+			bootcampId
+		);
+	}
+	const newCourse = new Course({ bootcamp: bootcampId, ...req.body });
+	const addedCourse = await newCourse.save();
+
+	res.status(201).json({
+		success: true,
+		data: {
+			addedCourse,
 		},
 	});
 });
