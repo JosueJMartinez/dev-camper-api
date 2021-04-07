@@ -121,7 +121,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Update Bootcamp
-//  @route    Put /api/v1/bootcamps/:id
+//  @route    Put /api/v1/bootcamps/:bootId
 //  @access   Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
@@ -150,7 +150,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Delete bootcamp
-//  @route    Delete /api/v1/bootcamps/:id
+//  @route    Delete /api/v1/bootcamps/:bootId
 //  @access   Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };

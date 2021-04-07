@@ -49,7 +49,7 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 		path: 'bootcamp',
 		select: 'name description',
 	});
-	console.log(course);
+
 	if (!course)
 		throw new ErrorResponse(
 			`1. Resource not found with id of ${courseId}`,
@@ -71,7 +71,6 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 exports.createCourse = asyncHandler(async (req, res, next) => {
 	const { bootcampId } = { ...req.params };
 	const foundBootCamp = await Bootcamp.findById(bootcampId);
-	console.log(foundBootCamp);
 	if (!foundBootCamp) {
 		throw new ErrorResponse(
 			`Resource not found with id of ${bootcampId}`,
@@ -86,6 +85,56 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
 		success: true,
 		data: {
 			addedCourse,
+		},
+	});
+});
+
+//  @desc     Update Course
+//  @route    Put /api/v1/courses/:courseId
+//  @access   Private
+exports.updateCourse = asyncHandler(async (req, res, next) => {
+	const { courseId } = { ...req.params };
+
+	const updateCourse = req.body;
+	const course = await Course.findByIdAndUpdate(courseId, updateCourse, {
+		new: true,
+		runValidators: true,
+	});
+
+	if (!course)
+		throw new ErrorResponse(
+			`Resource not found with id of ${courseId}`,
+			404,
+			courseId
+		);
+
+	res.status(200).json({
+		success: true,
+		data: {
+			course,
+		},
+	});
+});
+
+//  @desc     Delete course
+//  @route    Delete /api/v1/courses/:courseId
+//  @access   Private
+exports.deleteCourse = asyncHandler(async (req, res, next) => {
+	const { courseId } = { ...req.params };
+	const course = await Course.findById(courseId);
+	if (!course)
+		throw new ErrorResponse(
+			`Resource not found with id of ${courseId}`,
+			404,
+			courseId
+		);
+
+	course.remove();
+
+	res.status(200).json({
+		success: true,
+		data: {
+			course,
 		},
 	});
 });
