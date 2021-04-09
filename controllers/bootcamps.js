@@ -204,3 +204,26 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 		},
 	});
 });
+
+//  @desc     Upload photo for bootcamp
+//  @route    Post /api/v1/bootcamps/uploadPhoto
+//  @access   Private
+exports.uploadPhoto = asyncHandler(async (req, res, next) => {
+	const { bootId } = { ...req.params };
+	const bootcamp = await Bootcamp.findById(bootId);
+	if (!bootcamp)
+		throw new ErrorResponse(
+			`Resource not found with id of ${bootId}`,
+			404,
+			bootId
+		);
+
+	bootcamp.remove();
+
+	res.status(200).json({
+		success: true,
+		data: {
+			bootcamp,
+		},
+	});
+});
