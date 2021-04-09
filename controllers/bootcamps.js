@@ -107,7 +107,6 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 		path: 'courses',
 		select: 'title',
 	});
-	console.log(bootcamp);
 	if (!bootcamp)
 		throw new ErrorResponse(
 			`1. Resource not found with id of ${bootId}`,
