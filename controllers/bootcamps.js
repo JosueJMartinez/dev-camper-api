@@ -103,7 +103,10 @@ exports.createBootCamp = asyncHandler(async (req, res, next) => {
 //  @access   Public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
-	const bootcamp = await Bootcamp.findById(bootId);
+	const bootcamp = await Bootcamp.findById(bootId).populate({
+		path: 'courses',
+		select: 'title',
+	});
 	console.log(bootcamp);
 	if (!bootcamp)
 		throw new ErrorResponse(
