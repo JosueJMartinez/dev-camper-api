@@ -1,4 +1,5 @@
-const express = require('express'),
+const path = require('path'),
+	express = require('express'),
 	dotenv = require('dotenv'),
 	morgan = require('morgan'),
 	fileUpload = require('express-fileupload'),
@@ -28,6 +29,8 @@ app.use(express.json());
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
 // middleware for fileuploads
 app.use(fileUpload());
 

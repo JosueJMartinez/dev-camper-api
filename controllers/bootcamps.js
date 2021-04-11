@@ -1,3 +1,4 @@
+const path = require('path');
 const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
@@ -206,11 +207,12 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc     Upload photo for bootcamp
-//  @route    Post /api/v1/bootcamps/uploadPhoto
+//  @route    Put /api/v1/bootcamps/:bootId/uploadPhoto
 //  @access   Private
-exports.uploadPhoto = asyncHandler(async (req, res, next) => {
+exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
 	const bootcamp = await Bootcamp.findById(bootId);
+
 	if (!bootcamp)
 		throw new ErrorResponse(
 			`Resource not found with id of ${bootId}`,
@@ -218,12 +220,53 @@ exports.uploadPhoto = asyncHandler(async (req, res, next) => {
 			bootId
 		);
 
-	bootcamp.remove();
+	if (!req.files || Object.keys(req.files).length === 0) {
+		throw new ErrorResponse(`Please upload a file`, 400, bootId);
+	}
 
-	res.status(200).json({
-		success: true,
-		data: {
-			bootcamp,
-		},
-	});
+	const bootcampPhoto = req.files.bootcampPhoto;
+
+	// Check it is an actual photo uploads
+	if (!bootcampPhoto.mimetype.startsWith('image')) {
+		throw new ErrorResponse(`Wrong format for photo`, 400);
+	}
+
+	// Check filesize
+	if (bootcampPhoto.size > process.env.MAX_PHOTO_UPLOAD_SIZE) {
+		throw new ErrorResponse(
+			`Please upload an image less than ${process.env.MAX_PHOTO_UPLOAD_SIZE} bytes`,
+			400
+		);
+	}
+
+	//Create custom file name
+	bootcampPhoto.name = `photo_${bootId}${
+		path.parse(bootcampPhoto.name).ext
+	}`;
+
+	bootcampPhoto.mv(
+		`${process.env.FILE_UPLOAD_PATH}/${bootcampPhoto.name}`,
+		async err => {
+			if (err) {
+				console.error(err);
+				throw new ErrorResponse(`Error happen while saving photo`, 500);
+			}
+
+			await Bootcamp.findByIdAndUpdate(bootId, {
+				photo: bootcampPhoto.name,
+			});
+
+			res.status(200).json({
+				success: true,
+				data: bootcampPhoto.name,
+			});
+		}
+	);
+
+	// res.status(200).json({
+	// 	success: true,
+	// 	data: {
+	// 		bootcamp,
+	// 	},
+	// });
 });
