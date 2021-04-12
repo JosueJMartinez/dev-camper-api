@@ -23,6 +23,7 @@ const advancedResults = (Model, populate, model) =>
 
 		// 	Find resources
 		let query = Model.find(JSON.parse(queryStr));
+
 		// Select fields do this only if select fields are present to limit selection
 		if (req.query.select) {
 			const fields = req.query.select.replace(/,/g, ' ');
@@ -38,13 +39,7 @@ const advancedResults = (Model, populate, model) =>
 		}
 
 		if (populate) {
-			query = query.populate(
-				populate
-				//   {
-				// 	path: 'courses',
-				// 	select: 'title',
-				// }
-			);
+			query = query.populate(populate);
 		}
 
 		// Pagination

@@ -8,7 +8,18 @@ const asyncHandler = require('../middleware/async');
 //  @route    Get /api/v1/bootcamps/:bootId/courses
 //  @access   Public
 exports.getCourses = asyncHandler(async (req, res, next) => {
-	res.status(200).json(res.advancedResults);
+	// let query;
+	const { bootcampId } = { ...req.params };
+	if (bootcampId) {
+		const courses = await Course.find({ bootcamp: bootcampId });
+		res.status(200).json({
+			success: true,
+			count: courses.length,
+			data: courses,
+		});
+	} else {
+		res.status(200).json(res.advancedResults);
+	}
 });
 
 //  @desc     Get one course
@@ -30,9 +41,7 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			course,
-		},
+		data: course,
 	});
 });
 
@@ -54,9 +63,7 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
 
 	res.status(201).json({
 		success: true,
-		data: {
-			addedCourse,
-		},
+		data: addedCourse,
 	});
 });
 
@@ -81,9 +88,7 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			course,
-		},
+		data: course,
 	});
 });
 
@@ -104,8 +109,6 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			course,
-		},
+		data: course,
 	});
 });

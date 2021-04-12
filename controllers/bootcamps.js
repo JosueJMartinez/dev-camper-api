@@ -41,9 +41,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			bootcamp,
-		},
+		data: bootcamp,
 	});
 });
 
@@ -70,9 +68,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			bootcamp,
-		},
+		data: bootcamp,
 	});
 });
 
@@ -93,9 +89,7 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			bootcamp,
-		},
+		data: bootcamp,
 	});
 });
 
@@ -123,10 +117,8 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({
 		success: true,
-		data: {
-			bootcamps,
-			count: bootcamps.length,
-		},
+		data: bootcamps,
+		count: bootcamps.length,
 	});
 });
 
@@ -186,11 +178,4 @@ exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 			});
 		}
 	);
-
-	// res.status(200).json({
-	// 	success: true,
-	// 	data: {
-	// 		bootcamp,
-	// 	},
-	// });
 });
