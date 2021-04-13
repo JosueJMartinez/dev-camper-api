@@ -3,6 +3,7 @@ const path = require('path'),
 	dotenv = require('dotenv'),
 	morgan = require('morgan'),
 	fileUpload = require('express-fileupload'),
+	cookieParser = require('cookie-parser'),
 	colors = require('colors');
 
 const errorHandler = require('./middleware/error');
@@ -34,11 +35,21 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 // middleware for fileuploads
 app.use(fileUpload());
+// Cookie parser middleware
+app.use(cookieParser());
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
 app.use('/api/v1/auth', auth);
+
+// Secret route for jenny for fun
+app.get('/jen', (req, res) => {
+	let jen = [];
+	for (let i = 1; i < 101; i++)
+		jen.push('Jenny Jen Jen smells like booty!');
+	res.status(200).json({ success: true, jen });
+});
 
 app.get('*', (req, res) => {
 	res.status(404).json({ success: false, message: 'page not found' });
