@@ -164,7 +164,6 @@ exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 		`${process.env.FILE_UPLOAD_PATH}/${bootcampPhoto.name}`,
 		async err => {
 			if (err) {
-				console.error(err);
 				throw new ErrorResponse(`Error happen while saving photo`, 500);
 			}
 
