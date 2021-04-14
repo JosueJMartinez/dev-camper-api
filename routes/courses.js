@@ -8,14 +8,14 @@ const {
 } = require('../controllers/courses');
 const Course = require('../models/Course');
 const advancedResults = require('../middleware/advancedResults');
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const router = express.Router({ mergeParams: true });
 
 router
 	.route('/:courseId')
 	.get(getCourse)
-	.put(protect, updateCourse)
-	.delete(protect, deleteCourse);
+	.put(protect, authorize('publisher', 'protect'), updateCourse)
+	.delete(protect, authorize('publisher', 'protect'), deleteCourse);
 router
 	.route('/')
 	.get(
@@ -26,6 +26,6 @@ router
 		),
 		getCourses
 	)
-	.post(protect, createCourse);
+	.post(protect, authorize('publisher', 'protect'), createCourse);
 
 module.exports = router;
