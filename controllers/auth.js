@@ -74,8 +74,8 @@ const sendTokenResponse = (user, statusCode, res) => {
 //  @route    Get /api/v1/auth/me
 //  @access   Private
 exports.getCurrentUser = asyncHandler(async (req, res, next) => {
-	let { user } = { ...req };
-	user = await User.findById(user.id);
-	if (!user) throw new ErrorResponse('User not found', 401);
+	const { user } = { ...req };
+	if (!user)
+		throw new ErrorResponse('Current logged in user not found', 401);
 	res.status(200).json({ success: true, data: user });
 });
