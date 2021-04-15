@@ -15,7 +15,22 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 //  @route    Post /api/v1/bootcamps
 //  @access   Private
 exports.createBootCamp = asyncHandler(async (req, res, next) => {
-	const newBootcamp = new Bootcamp(req.body);
+	// check if this user has made any bootcamps
+	// if they did check role admin can create more than one and publisher can only create one
+	const publishedBootcamp = await Bootcamp.findOne({ user: req.user.id });
+	if (publishedBootcamp && req.user.role !== 'admin') {
+		throw new ErrorResponse(
+			`The user with id '${req.user.id}' and role '${req.user.role}' has either created a bootcamp or does not have permissions.`,
+			400
+		);
+	}
+
+	// add user id to the new bootcamp,
+	// which is provided from the middleware of protect in routes for bootcamps
+	const newBootcamp = new Bootcamp({
+		user: req.user.id,
+		...req.body,
+	});
 	const addedBootcamp = await newBootcamp.save();
 	res.status(201).json({
 		success: true,

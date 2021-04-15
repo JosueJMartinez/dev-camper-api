@@ -14,8 +14,8 @@ const router = express.Router({ mergeParams: true });
 router
 	.route('/:courseId')
 	.get(getCourse)
-	.put(protect, authorize('publisher', 'protect'), updateCourse)
-	.delete(protect, authorize('publisher', 'protect'), deleteCourse);
+	.put(protect, authorize('publisher', 'admin'), updateCourse)
+	.delete(protect, authorize('publisher', 'admin'), deleteCourse);
 router
 	.route('/')
 	.get(
@@ -26,6 +26,6 @@ router
 		),
 		getCourses
 	)
-	.post(protect, authorize('publisher', 'protect'), createCourse);
+	.post(protect, authorize('publisher', 'admin'), createCourse);
 
 module.exports = router;
