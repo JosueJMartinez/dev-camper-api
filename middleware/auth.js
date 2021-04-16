@@ -15,9 +15,13 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
 	// Make sure token is exists
 	if (!token) throw new ErrorResponse('Not authorized', 401);
-
 	const decoded = jwt.verify(token, process.env.JWT_SECRET);
 	req.user = await User.findById(decoded.id);
+	if (!req.user)
+		throw new ErrorResponse(
+			'Uh oh something went wrong logged in user not found',
+			404
+		);
 	next();
 });
 

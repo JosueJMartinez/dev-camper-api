@@ -20,7 +20,7 @@ exports.createBootCamp = asyncHandler(async (req, res, next) => {
 	const publishedBootcamp = await Bootcamp.findOne({ user: req.user.id });
 	if (publishedBootcamp && req.user.role !== 'admin') {
 		throw new ErrorResponse(
-			`The user with id '${req.user.id}' and role '${req.user.role}' has either created a bootcamp or does not have permissions.`,
+			`The user with id '${req.user.id}' and role '${req.user.role}' has either created a bootcamp or does not have permissions`,
 			400
 		);
 	}
@@ -74,6 +74,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 			runValidators: true,
 		}
 	);
+
 	if (!bootcamp)
 		throw new ErrorResponse(
 			`Resource not found with id of ${bootId}`,
@@ -81,6 +82,9 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 			bootId
 		);
 
+	console.log(bootcamp.user, req.user);
+	// Make sure user is bootcamp owner
+	// if(bootcamp.user.toString)
 	res.status(200).json({
 		success: true,
 		data: bootcamp,
