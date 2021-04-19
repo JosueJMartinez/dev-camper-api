@@ -41,6 +41,11 @@ const CourseSchema = new mongoose.Schema({
 		required: true,
 	},
 	slug: String,
+	user: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'User',
+		required: true,
+	},
 });
 
 // Slugify Course name

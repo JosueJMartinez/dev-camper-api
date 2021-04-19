@@ -66,14 +66,9 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
 	const updateBootcamp = req.body;
-	const bootcamp = await Bootcamp.findByIdAndUpdate(
-		bootId,
-		updateBootcamp,
-		{
-			new: true,
-			runValidators: true,
-		}
-	);
+	const currentUser = req.user;
+	// Find bootcamp to update
+	let bootcamp = await Bootcamp.findById(bootId);
 
 	if (!bootcamp)
 		throw new ErrorResponse(
@@ -82,9 +77,22 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 			bootId
 		);
 
-	console.log(bootcamp.user, req.user);
-	// Make sure user is bootcamp owner
-	// if(bootcamp.user.toString)
+	// Make sure user is bootcamp owner or admin if return ErrorResponse
+	if (
+		bootcamp.user.toString() !== currentUser.id &&
+		currentUser.role !== 'admin'
+	)
+		throw new ErrorResponse(
+			`You do not have access to update campground with current role: ${currentUser.role}`,
+			401
+		);
+
+	// update bootcamp if passes check
+	bootcamp = await Bootcamp.findByIdAndUpdate(bootId, updateBootcamp, {
+		new: true,
+		runValidators: true,
+	});
+
 	res.status(200).json({
 		success: true,
 		data: bootcamp,
@@ -97,6 +105,8 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
 	const bootcamp = await Bootcamp.findById(bootId);
+	const currentUser = req.user;
+
 	if (!bootcamp)
 		throw new ErrorResponse(
 			`Resource not found with id of ${bootId}`,
@@ -104,11 +114,21 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 			bootId
 		);
 
+	// Make sure user is bootcamp owner or admin if return ErrorResponse
+	if (
+		bootcamp.user.toString() !== currentUser.id &&
+		currentUser.role !== 'admin'
+	)
+		throw new ErrorResponse(
+			`You do not have access to delete campground with current role: ${currentUser.role}`,
+			401
+		);
+
 	bootcamp.remove();
 
 	res.status(200).json({
 		success: true,
-		data: bootcamp,
+		data: {},
 	});
 });
 
@@ -147,12 +167,23 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 	const { bootId } = { ...req.params };
 	const bootcamp = await Bootcamp.findById(bootId);
+	const currentUser = req.user;
 
 	if (!bootcamp)
 		throw new ErrorResponse(
 			`Resource not found with id of ${bootId}`,
 			404,
 			bootId
+		);
+
+	// Make sure user is bootcamp owner or admin if return ErrorResponse
+	if (
+		bootcamp.user.toString() !== currentUser.id &&
+		currentUser.role !== 'admin'
+	)
+		throw new ErrorResponse(
+			`You do not have access to upload photo for this campground`,
+			401
 		);
 
 	if (!req.files || Object.keys(req.files).length === 0) {
@@ -189,6 +220,16 @@ exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 			await Bootcamp.findByIdAndUpdate(bootId, {
 				photo: bootcampPhoto.name,
 			});
+
+			// Make sure user is bootcamp owner or admin if return ErrorResponse
+			if (
+				bootcamp.user.toString() !== currentUser.id &&
+				currentUser.role !== 'admin'
+			)
+				throw new ErrorResponse(
+					`You do not have access to delete campground with current role: ${currentUser.role}`,
+					401
+				);
 
 			res.status(200).json({
 				success: true,
