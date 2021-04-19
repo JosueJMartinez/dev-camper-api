@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
-// const geocoder = require('../utils/geocoder');
+const sendEmail = require('../utils/sendEmail');
+const crypto = require('crypto');
 
 //  @desc     Register User
 //  @route    Post /api/v1/auth/register
@@ -70,10 +71,58 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 		throw new ErrorResponse(`No user found with email ${email}`, 404);
 
 	const resetToken = user.getResetPasswordToken();
-	await user.save({ validateBeforeSave: false });
-	console.log(resetToken);
 
-	res.status(200).json({ success: true, data: user });
+	await user.save({ validateBeforeSave: false });
+
+	// Create reset url
+	const resetUrl = `${req.protocol}://${req.get(
+		'host'
+	)}/api/v1/auth/resetPassword/${resetToken}`;
+
+	try {
+		await sendEmail({
+			email: user.email,
+			subject: `Reset Password DevCamper ${user.name}`,
+			message: `Make a put request to ${resetUrl}`,
+		});
+	} catch (err) {
+		console.log(err);
+		user.resetPasswordToken = undefined;
+		user.resetPasswordExpire == undefined;
+		user.save({ validateBeforeSave: false });
+		throw new ErrorResponse('Unable to send email', 500);
+	}
+
+	res.status(200).json({ success: true, data: 'Email sent' });
+});
+
+//  @desc     reset password
+//  @route    Put /api/v1/auth/resetPassword/:resetToken
+//  @access   Public
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+	// get hashed token
+	const resetPasswordToken = crypto
+		.createHash('sha256')
+		.update(req.params.resetToken)
+		.digest('hex');
+
+	const user = await User.findOne({
+		resetPasswordToken,
+		resetPasswordExpire: { $gt: Date.now() },
+	});
+
+	if (!user) {
+		throw new ErrorResponse(`Not a valid token`, 400);
+	}
+
+	// set new password
+	user.password = req.body.password;
+	user.resetPasswordToken = undefined;
+	user.resetPasswordExpire = undefined;
+
+	await user.save();
+
+	sendTokenResponse(user, 200, res);
 });
 
 // Get token from model, create cookie and send resp
