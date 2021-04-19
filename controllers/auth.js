@@ -59,6 +59,46 @@ exports.getCurrentUser = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: user });
 });
 
+//  @desc     Update user details
+//  @route    Put /api/v1/auth/updateMe
+//  @access   Private
+exports.updateUser = asyncHandler(async (req, res, next) => {
+	let { user } = { ...req };
+	const { name, email } = { ...req.body };
+	console.log(user);
+	if (!user)
+		throw new ErrorResponse('Current logged in user not found', 401);
+
+	user = await User.findById(user.id);
+
+	if (name) user.name = name;
+
+	if (email) user.email = email;
+
+	user = await user.save();
+	res.status(200).json({ success: true, data: user });
+});
+
+//  @desc     Update Password
+//  @route    Put /api/v1/auth/updatepassword
+//  @access   Private
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user.id).select('+password');
+	const { password, newPassword } = { ...req.body };
+
+	if (!user)
+		throw new ErrorResponse('Current logged in user not found', 401);
+
+	// Check if old password matches with database
+	if (!(await user.matchPassword(password)))
+		throw new ErrorResponse('Invalid credentials', 401);
+
+	user.password = newPassword;
+	await user.save();
+
+	sendTokenResponse(user, 200, res);
+});
+
 //  @desc     Forgot password
 //  @route    Post /api/v1/auth/forgotpassword
 //  @access   Public
