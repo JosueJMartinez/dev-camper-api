@@ -53,7 +53,14 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 //  @route    Post /api/v1/auth/users
 //  @access   Private/Admin
 exports.createUser = asyncHandler(async (req, res, next) => {
-	const newUser = User.create(req.body);
+	const { email } = { ...req.body };
+
+	const user = await User.findOne({ email });
+
+	if (user)
+		throw new ErrorResponse(`A user with this email already exists`, 401);
+
+	const newUser = await User.create(req.body);
 
 	res.status(201).json({ success: true, data: newUser });
 });
@@ -63,7 +70,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 //  @access   Private/Admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
 	const userId = req.params.userId;
-	const user = User.findById(userId);
+	const user = await User.findById(userId);
 
 	if (!user) {
 		throw new ErrorResponse(`User does not exist with id: ${userId}`, 404);
