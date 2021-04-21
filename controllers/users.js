@@ -54,8 +54,8 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 //  @access   Private/Admin
 exports.createUser = asyncHandler(async (req, res, next) => {
 	const newUser = User.create(req.body);
-	
-	
+
+	res.status(201).json({ success: true, data: newUser });
 });
 
 //  @desc     Delete a user
@@ -63,17 +63,16 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 //  @access   Private/Admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
 	const userId = req.params.userId;
-	const user = User.findById(userId)
-	
-	if(!user){
-		throw new ErrorResponse(`User does not exist with id: ${userId}`, 404)
+	const user = User.findById(userId);
+
+	if (!user) {
+		throw new ErrorResponse(`User does not exist with id: ${userId}`, 404);
 	}
-	
-	await user.remove()
-	
+
+	await user.remove();
+
 	res.status(200).json({
 		success: true,
 		data: {},
 	});
-	
 });
