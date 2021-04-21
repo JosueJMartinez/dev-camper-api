@@ -21,6 +21,7 @@ connectDB();
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
 const auth = require('./routes/auth');
+const users = require('./routes/users');
 
 const { PORT, NODE_ENV } = { ...process.env };
 const app = express();
@@ -42,9 +43,10 @@ app.use(cookieParser());
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
 
 // Secret route for jenny for fun
-app.get('/jen', (req, res) => {
+app.get('/api/v1/jen', (req, res) => {
 	let jen = [];
 	for (let i = 1; i < 101; i++)
 		jen.push('Jenny Jen Jen smells like booty!');

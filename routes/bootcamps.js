@@ -34,11 +34,10 @@ router
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Bootcamp,
-			{ path: 'courses', select: 'title' },
-			'Bootcamps'
-		),
+		advancedResults(Bootcamp, 'Bootcamps', {
+			path: 'courses',
+			select: 'title',
+		}),
 		getBootcamps
 	)
 	.post(protect, authorize('publisher', 'admin'), createBootCamp);

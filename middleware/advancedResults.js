@@ -1,7 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('./async');
 
-const advancedResults = (Model, populate, model) =>
+const advancedResults = (Model, model, populate) =>
 	asyncHandler(async (req, res, next) => {
 		// 	Copy req.query
 		const reqQuery = { ...req.query };

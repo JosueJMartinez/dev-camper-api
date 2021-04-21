@@ -19,11 +19,10 @@ router
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Course,
-			{ path: 'bootcamp', select: 'name description' },
-			'Courses'
-		),
+		advancedResults(Course, 'Courses', {
+			path: 'bootcamp',
+			select: 'name description',
+		}),
 		getCourses
 	)
 	.post(protect, authorize('publisher', 'admin'), createCourse);

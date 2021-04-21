@@ -6,6 +6,7 @@ const asyncHandler = require('../middleware/async');
 //  @route    Get /api/v1/auth/users
 //  @access   Private/Admin
 exports.getUsers = asyncHandler(async (req, res, next) => {
+	console.log('users');
 	res.status(200).json(res.advancedResults);
 });
 
@@ -55,11 +56,6 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 exports.createUser = asyncHandler(async (req, res, next) => {
 	const { email } = { ...req.body };
 
-	const user = await User.findOne({ email });
-
-	if (user)
-		throw new ErrorResponse(`A user with this email already exists`, 401);
-
 	const newUser = await User.create(req.body);
 
 	res.status(201).json({ success: true, data: newUser });
@@ -69,6 +65,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 //  @route    Delete /api/v1/auth/users/:userId
 //  @access   Private/Admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
+	console.log('in delete');
 	const userId = req.params.userId;
 	const user = await User.findById(userId);
 
