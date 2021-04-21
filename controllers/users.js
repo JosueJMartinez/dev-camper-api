@@ -52,9 +52,28 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 //  @desc     Create a user
 //  @route    Post /api/v1/auth/users
 //  @access   Private/Admin
-exports.createUser = asyncHandler(async (req, res, next) => {});
+exports.createUser = asyncHandler(async (req, res, next) => {
+	const newUser = User.create(req.body);
+	
+	
+});
 
 //  @desc     Delete a user
 //  @route    Delete /api/v1/auth/users/:userId
 //  @access   Private/Admin
-exports.deleteUser = asyncHandler(async (req, res, next) => {});
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+	const userId = req.params.userId;
+	const user = User.findById(userId)
+	
+	if(!user){
+		throw new ErrorResponse(`User does not exist with id: ${userId}`, 404)
+	}
+	
+	await user.remove()
+	
+	res.status(200).json({
+		success: true,
+		data: {},
+	});
+	
+});
