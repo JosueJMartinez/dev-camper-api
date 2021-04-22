@@ -6,7 +6,6 @@ const asyncHandler = require('../middleware/async');
 //  @route    Get /api/v1/auth/users
 //  @access   Private/Admin
 exports.getUsers = asyncHandler(async (req, res, next) => {
-	console.log('users');
 	res.status(200).json(res.advancedResults);
 });
 
@@ -65,7 +64,6 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 //  @route    Delete /api/v1/auth/users/:userId
 //  @access   Private/Admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
-	console.log('in delete');
 	const userId = req.params.userId;
 	const user = await User.findById(userId);
 
