@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const opts = { toJSON: { virtuals: true }, toObject: { virtuals: true } };
+// const opts = { toJSON: { virtuals: true }, toObject: { virtuals: true } };
 
 const ReviewSchema = new mongoose.Schema(
 	{
@@ -17,8 +17,8 @@ const ReviewSchema = new mongoose.Schema(
 		},
 		rating: {
 			type: Number,
-			min: [1, 'Rating must be at least 1'],
-			max: [10, 'Rating must can not be more than 10'],
+			min: 1,
+			max: 10,
 			required: [true, 'Please add a rating between 1 and 10'],
 		},
 		createdAt: {
@@ -35,8 +35,8 @@ const ReviewSchema = new mongoose.Schema(
 			ref: 'Bootcamp',
 			required: true,
 		},
-	},
-	opts
+	}
+	// opts
 );
 
 module.exports = mongoose.model('Review', ReviewSchema);

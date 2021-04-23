@@ -22,6 +22,7 @@ const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
+const reviews = require('./routes/reviews');
 
 const { PORT, NODE_ENV } = { ...process.env };
 const app = express();
@@ -44,12 +45,17 @@ app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
+app.use('/api/v1/reviews', reviews);
 
 // Secret route for jenny for fun
 app.get('/api/v1/jen', (req, res) => {
 	let jen = [];
-	for (let i = 1; i < 101; i++)
-		jen.push('Jenny Jen Jen smells like booty!');
+	const nouns = ['booty', 'butt', 'ass'];
+
+	for (let i = 1; i < 101; i++) {
+		const rand = Math.floor(Math.random() * 3);
+		jen.push(`Jenny Jen Jen smells like ${nouns[rand]}!`);
+	}
 	res.status(200).json({ success: true, jen });
 });
 
