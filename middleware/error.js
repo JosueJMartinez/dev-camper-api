@@ -1,4 +1,5 @@
 const ErrorResponse = require('../utils/errorResponse');
+const _ = require('lodash');
 
 function errorHandler(err, req, res, next) {
 	let error = { ...err };
@@ -11,10 +12,13 @@ function errorHandler(err, req, res, next) {
 
 	// Mongoose Duplicate Error
 	if (error.code === 11000)
-		error = new ErrorResponse(
-			`Duplicate name found trying to create this resource`,
-			400
-		);
+		if (_.isEqual(error.keyPattern, { bootcamp: 1, user: 1 }))
+			error = new ErrorResponse(`User already has a review`, 400);
+		else
+			error = new ErrorResponse(
+				`Duplicate name found trying to create this resource`,
+				400
+			);
 
 	// Mongoose validation error
 	if (err.name === 'ValidationError') {

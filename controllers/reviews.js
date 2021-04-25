@@ -66,7 +66,6 @@ exports.getReview = asyncHandler(async (req, res, nexr) => {
 exports.createReview = asyncHandler(async (req, res, next) => {
 	const { bootcampId } = { ...req.params };
 	const currentUser = req.user;
-
 	const foundBootCamp = await Bootcamp.findById(bootcampId);
 	const foundUserReview = await Review.findOne({
 		user: currentUser.id,
@@ -76,39 +75,90 @@ exports.createReview = asyncHandler(async (req, res, next) => {
 	// check for bootcamp exists before creating the review
 	if (!foundBootCamp) {
 		throw new ErrorResponse(
-			`Resource not found with id of ${bootcampId}`,
+			`Could not find bootcamp to write review`,
 			404,
 			bootcampId
 		);
 	}
 
-	// Check if user already made a review for this bootcamp
-	if (foundUserReview) {
-		throw new ErrorResponse(
-			`Already made a review for this bootcamp`,
-			401
-		);
-	}
-
-	// Make sure user is owner of bootcamp to create course
-	if (
-		foundBootCamp.user.toString() !== currentUser.id &&
-		currentUser.role !== 'admin'
-	)
-		throw new ErrorResponse(
-			`User ${req.user.id} is not authorized to create course for bootcamp ${bootcampId}`,
-			401
-		);
-
-	const newCourse = new Course({
-		bootcamp: bootcampId,
-		user: req.user.id,
+	const newReview = new Review({
 		...req.body,
+		bootcamp: bootcampId,
+		user: currentUser.id,
 	});
-	const addedCourse = await newCourse.save();
+	const addedReview = await newReview.save();
 
 	res.status(201).json({
 		success: true,
-		data: addedCourse,
+		data: addedReview,
+	});
+});
+
+//  @desc     Update review
+//  @route    Put /api/v1/reviews/:reviewId
+//  @access   Private
+exports.updateReview = asyncHandler(async (req, res, next) => {
+	const { reviewId } = { ...req.params };
+	const currentUser = req.user;
+	const updateReview = req.body;
+	let review = await Review.findById(reviewId);
+	if (!review)
+		throw new ErrorResponse(
+			`Resource not found with id of ${reviewId}`,
+			404,
+			reviewId
+		);
+
+	// Make sure user is review owner or admin if return ErrorResponse
+	if (
+		review.user.toString() !== currentUser.id &&
+		currentUser.role !== 'admin'
+	)
+		throw new ErrorResponse(
+			`User ${req.user.id} is not authorized to update review ${reviewId}`,
+			401
+		);
+
+	review = await Review.findByIdAndUpdate(reviewId, updateReview, {
+		new: true,
+		runValidators: true,
+	});
+
+	res.status(200).json({
+		success: true,
+		data: review,
+	});
+});
+
+//  @desc     Delete review
+//  @route    Delete /api/v1/reviews/:reviewId
+//  @access   Private
+exports.deleteReview = asyncHandler(async (req, res, next) => {
+	const { reviewId } = { ...req.params };
+	const review = await Review.findById(reviewId);
+	const currentUser = req.user;
+
+	if (!review)
+		throw new ErrorResponse(
+			`Resource not found with id of ${reviewId}`,
+			404,
+			reviewId
+		);
+
+	// Make sure user is review owner or admin if return ErrorResponse
+	if (
+		review.user.toString() !== currentUser.id &&
+		currentUser.role !== 'admin'
+	)
+		throw new ErrorResponse(
+			`User ${req.user.id} is not authorized to update review ${reviewId}`,
+			401
+		);
+
+	await review.remove();
+
+	res.status(200).json({
+		success: true,
+		data: {},
 	});
 });
