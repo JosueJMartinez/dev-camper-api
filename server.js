@@ -7,7 +7,10 @@ const path = require('path'),
 	colors = require('colors'),
 	mongoSanitize = require('express-mongo-sanitize'),
 	helmet = require('helmet'),
-	xss = require('xss-clean');
+	xss = require('xss-clean'),
+	rateLimit = require('express-rate-limit'),
+	hpp = require('hpp'),
+	cors = require('cors');
 
 const errorHandler = require('./middleware/error');
 
@@ -36,8 +39,6 @@ app.use(express.json());
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
-// Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
 // middleware for fileuploads
 app.use(fileUpload());
 // Cookie parser middleware
@@ -48,6 +49,21 @@ app.use(mongoSanitize());
 app.use(helmet());
 // Prevent XSS attacks
 app.use(xss());
+// Prevent http param pollution
+app.use(hpp());
+// Enable CORS
+app.use(cors());
+
+const limiter = rateLimit({
+	windowMs: 30 * 60 * 1000, // 30 minutes
+	max: 100, // limit each IP to 100 requests per windowMs
+});
+
+//  apply to all requests
+app.use(limiter);
+
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
