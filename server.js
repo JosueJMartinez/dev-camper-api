@@ -4,7 +4,10 @@ const path = require('path'),
 	morgan = require('morgan'),
 	fileUpload = require('express-fileupload'),
 	cookieParser = require('cookie-parser'),
-	colors = require('colors');
+	colors = require('colors'),
+	mongoSanitize = require('express-mongo-sanitize'),
+	helmet = require('helmet'),
+	xss = require('xss-clean');
 
 const errorHandler = require('./middleware/error');
 
@@ -39,6 +42,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload());
 // Cookie parser middleware
 app.use(cookieParser());
+// To remove data, use:
+app.use(mongoSanitize());
+// Set security headers
+app.use(helmet());
+// Prevent XSS attacks
+app.use(xss());
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);

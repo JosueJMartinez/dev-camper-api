@@ -5,10 +5,7 @@ function errorHandler(err, req, res, next) {
 	let error = { ...err };
 	error.message = err.message;
 	if (err.name === 'CastError')
-		error = new ErrorResponse(
-			`Resource not found with id of ${err.value}`,
-			404
-		);
+		error = new ErrorResponse(`Resource not found`, 404);
 
 	// Mongoose Duplicate Error
 	if (error.code === 11000)
