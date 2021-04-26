@@ -43,6 +43,25 @@ const UserSchema = new mongoose.Schema({
 	},
 });
 
+// Cascade delete bootcamps when a user is deleted
+UserSchema.pre('remove', async function (next) {
+	// look for all bootcamps the user is owner of
+	const bootcamps = await this.model('Bootcamp').find({ user: this._id });
+	// .exec();
+
+	// go through each bootcamp and delete courses and reviews related to each bootcamp
+	bootcamps.forEach(async bootcamp => {
+		await this.model('Course').deleteMany({ bootcamp: bootcamp._id });
+		await this.model('Review').deleteMany({ bootcamp: bootcamp._id });
+	});
+
+	// next delete bootcamps, reviews, and courses related to this user
+	await this.model('Bootcamp').deleteMany({ user: this._id });
+	await this.model('Review').deleteMany({ user: this._id });
+	await this.model('Course').deleteMany({ user: this._id });
+	next();
+});
+
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function (next) {
 	// check if password is modified
