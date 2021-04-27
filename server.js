@@ -46,7 +46,7 @@ app.use(cookieParser());
 // To remove data, use:
 app.use(mongoSanitize());
 // Set security headers
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 // Prevent XSS attacks
 app.use(xss());
 // Prevent http param pollution

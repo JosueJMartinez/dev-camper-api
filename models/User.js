@@ -47,7 +47,6 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre('remove', async function (next) {
 	// look for all bootcamps the user is owner of
 	const bootcamps = await this.model('Bootcamp').find({ user: this._id });
-	// .exec();
 
 	// go through each bootcamp and delete courses and reviews related to each bootcamp
 	bootcamps.forEach(async bootcamp => {
@@ -59,6 +58,7 @@ UserSchema.pre('remove', async function (next) {
 	await this.model('Bootcamp').deleteMany({ user: this._id });
 	await this.model('Review').deleteMany({ user: this._id });
 	await this.model('Course').deleteMany({ user: this._id });
+
 	next();
 });
 
