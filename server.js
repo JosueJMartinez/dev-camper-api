@@ -75,7 +75,7 @@ app.use('/api/v1/reviews', reviews);
 // Secret route for jenny for fun
 app.get('/api/v1/jen', (req, res) => {
 	let jen = [];
-	const nouns = ['booty', 'butt', 'ass'];
+	const nouns = ['booty', 'flowers', 'chocolate'];
 
 	for (let i = 1; i < 101; i++) {
 		const rand = Math.floor(Math.random() * 3);
