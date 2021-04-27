@@ -147,6 +147,20 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: 'Email sent' });
 });
 
+//  @desc     Delete user account
+//  @route    Delete /api/v1/auth/deleteaccount
+//  @access   Private
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user.id);
+
+	if (!user)
+		throw new ErrorResponse(`User does not exist with id: ${userId}`, 404);
+
+	await user.remove();
+
+	res.status(200).json({ success: true, data: {} });
+});
+
 //  @desc     reset password
 //  @route    Put /api/v1/auth/resetPassword/:resetToken
 //  @access   Public
