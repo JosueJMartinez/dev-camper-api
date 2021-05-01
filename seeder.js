@@ -13,15 +13,12 @@ const Bootcamp = require('./models/Bootcamp'),
 	Review = require('./models/Review');
 
 // Connect to DB
-mongoose.connect(
-	'mongodb+srv://josue:Rings218@cluster0.jkann.mongodb.net/devbootcamp?retryWrites=true&w=majority',
-	{
-		useNewUrlParser: true,
-		useCreateIndex: true,
-		useFindAndModify: false,
-		useUnifiedTopology: true,
-	}
-);
+mongoose.connect(process.env.MONGO_URI, {
+	useNewUrlParser: true,
+	useCreateIndex: true,
+	useFindAndModify: false,
+	useUnifiedTopology: true,
+});
 
 // Read the JSON files
 const bootcamps = JSON.parse(
